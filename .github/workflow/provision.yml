@@ -1,0 +1,51 @@
+name: Provision or Deprovision Resource on AWS
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  provision:
+    runs-on: ubuntu-latest
+
+    env:
+      region: ${{ CDK_DEFAULT_REGION }}
+      account: ${{ CDK_DEFAULT_ACCOUNT }}
+
+    steps:
+      # Step to install Node.js (you can specify the version you need)
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '20.18.0'  # Specify your required Node.js version
+        run: npm install -g aws-cdk  # presumably npm is installed with node
+
+      #implement caching here with id
+
+      # checkout the code from this repo
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      # confirgure aws account and credentials as env using git vault
+      - name: Setup AWS Account and Credentials
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region:  $region
+
+      # provision resources
+      - name: Provision Resources
+        run: |
+           cdk bootstrap
+           cdk deploy --require-approval never
+
+  deprovision:
+    runs-on: ubuntu-latest
+    if: github.path == 'refs/heads/decommission/**'
+    steps:
+
+      - name: Echo process for now
+        run : |
+          echo "Decommissioning resources"
