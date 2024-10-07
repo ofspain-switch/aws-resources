@@ -8,6 +8,10 @@ import software.amazon.awscdk.cxapi.CloudArtifact;
 import software.amazon.awscdk.cxapi.CloudAssembly;
 import software.amazon.awscdk.cxapi.CloudFormationStackArtifact;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Properties;
+
 public class AwsResourcesProvisionApp {
     public static void main(final String[] args) {
         App app = new App();
@@ -19,6 +23,15 @@ public class AwsResourcesProvisionApp {
                 StackProps.builder().stackName("Git-provision-stack")
                 .env(evn)
                 .build());
+
+        new UbuntuArmStack(app, "UbuntuArmStack", StackProps.builder()
+                .env(Environment.builder()
+                        .account("CDK_DEFAULT_ACCOUNT") // Replace with your account id
+                        .region("CDK_DEFAULT_REGION") // Replace with your region
+                        .build())
+                .build());
+
+
         app.synth();
 
     }
@@ -31,6 +44,25 @@ public class AwsResourcesProvisionApp {
             System.out.println(template);
         }
 
+    }
+
+    private static Properties loadVariables(){
+        Properties properties = new Properties();
+
+        // Load the properties file from the classpath (resources folder)
+        try (InputStream input = App.class.getClassLoader().getResourceAsStream("env.properties")) {
+            if (input == null) {
+                System.out.println("Sorry, unable to find config.properties");
+            }else{
+
+                properties.load(input);
+            }
+
+
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }
+        return properties;
     }
 }
 
