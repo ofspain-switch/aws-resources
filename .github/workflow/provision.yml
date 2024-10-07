@@ -10,8 +10,8 @@ jobs:
     runs-on: ubuntu-latest
 
     env:
-      region: ${{ CDK_DEFAULT_REGION }}
-      account: ${{ CDK_DEFAULT_ACCOUNT }}
+      CDK_DEFAULT_REGION: ${{ secrets.AWS_REGION }}
+      CDK_DEFAULT_ACCOUNT: ${{ secrets.AWS_ACCOUNT }}
 
     steps:
       # Step to install Node.js (you can specify the version you need)
@@ -19,7 +19,18 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: '20.18.0'  # Specify your required Node.js version
-        run: npm install -g aws-cdk  # presumably npm is installed with node
+
+      # Install aws cdk
+      - name: Install AWS CDK
+        run: npm install -g aws-cdk
+
+      - name: Cache npm dependencies
+        uses: actions/cache@v2
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-node-${{ hashFiles('package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-  
 
       #implement caching here with id
 
@@ -33,19 +44,30 @@ jobs:
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region:  $region
+          aws-region:   ${{ secrets.AWS_REGION }}
 
       # provision resources
       - name: Provision Resources
         run: |
+           echo ${env.CDK_DEFAULT_REGION}
            cdk bootstrap
            cdk deploy --require-approval never
 
   deprovision:
     runs-on: ubuntu-latest
-    if: github.path == 'refs/heads/decommission/**'
+    if: github.ref == 'refs/heads/decommission'
     steps:
 
-      - name: Echo process for now
-        run : |
-          echo "Decommissioning resources"
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Setup AWS Account and Credentials
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }}
+
+      - name: Deprovision Resources
+        run: |
+          cdk destroy --force
