@@ -8,7 +8,7 @@ import software.constructs.Construct;
 import java.util.HashMap;
 import java.util.Map;
 
-
+//todo: link up with main for provisioning
 public class UbuntuArmStack extends Stack {
     public UbuntuArmStack(final Construct scope, final String id) {
         this(scope, id, null);
@@ -28,6 +28,7 @@ public class UbuntuArmStack extends Stack {
 
         securityGroup.addIngressRule(Peer.anyIpv4(), Port.tcp(22));
 
+        //todo: investigate regioning in ec2 provisioning and ami to use
         final Map<String, String> armUbuntuAMIs = new HashMap<>();
         armUbuntuAMIs.put("eu-west-1", "ami-0d7409d480c699f24");
 
