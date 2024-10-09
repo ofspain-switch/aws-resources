@@ -67,7 +67,7 @@ jobs:
       # provision resources
       - name: Provision Resources
         run: |
-           echo  $CDK_DEFAULT_REGION
+           echo "::add-mask::$CDK_DEFAULT_REGION"
            cdk bootstrap
            cdk deploy --require-approval never
 
