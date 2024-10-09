@@ -69,7 +69,8 @@ jobs:
         run: |
            echo $CDK_DEFAULT_REGION
            cdk bootstrap
-           cdk deploy --require-approval never
+           cdk deploy --require-approval never --all
+#          cdk deploy --require-approval never s3-bucket UbuntuArmStack: explicitly specify what to deploy
 
   deprovision:
     runs-on: ubuntu-latest
