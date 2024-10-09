@@ -15,9 +15,12 @@ import java.util.Properties;
 public class AwsResourcesProvisionApp {
     public static void main(final String[] args) {
         App app = new App();
+        Properties properties = loadVariables();
         Environment evn = Environment.builder()
-                .account(System.getenv("CDK_DEFAULT_ACCOUNT"))
-                .region(System.getenv("CDK_DEFAULT_REGION"))
+                .account(properties.getProperty("region"))
+                .region(properties.getProperty("account"))
+//                .account(System.getenv("CDK_DEFAULT_ACCOUNT"))
+//                .region(System.getenv("CDK_DEFAULT_REGION"))
                 .build();
         new AwsS3BucketProvisionStack(app, "s3-bucket",
                 StackProps.builder().stackName("Git-provision-stack")
