@@ -29,8 +29,8 @@ public class AwsResourcesProvisionApp {
 
         new UbuntuArmStack(app, "UbuntuArmStack", StackProps.builder()
                 .env(Environment.builder()
-                        .account("CDK_DEFAULT_ACCOUNT") // Replace with your account id
-                        .region("CDK_DEFAULT_REGION") // Replace with your region
+                        .account(System.getenv("CDK_DEFAULT_ACCOUNT"))
+                .region(System.getenv("CDK_DEFAULT_REGION")) // Replace with your region
                         .build())
                 .build());
 
