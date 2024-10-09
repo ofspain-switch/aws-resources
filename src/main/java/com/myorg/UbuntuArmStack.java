@@ -30,7 +30,8 @@ public class UbuntuArmStack extends Stack {
 
         //todo: investigate regioning in ec2 provisioning and ami to use
         final Map<String, String> armUbuntuAMIs = new HashMap<>();
-        armUbuntuAMIs.put("eu-west-1", "ami-0d7409d480c699f24");
+        armUbuntuAMIs.put(props.getEnv().getRegion(), "ami-0325498274077fac5");
+        //usa-east-1 ami-0866a3c8686eaeeba (64-bit (x86)) / ami-0325498274077fac5 (64-bit (Arm))
 
         final IMachineImage armUbuntuMachineImage = MachineImage.genericLinux(armUbuntuAMIs);
 
@@ -39,8 +40,8 @@ public class UbuntuArmStack extends Stack {
                 .machineImage(armUbuntuMachineImage)
                 .securityGroup(securityGroup)
                 .instanceType(InstanceType.of(
-                        InstanceClass.BURSTABLE4_GRAVITON,
-                        InstanceSize.SMALL
+                        InstanceClass.T2,
+                        InstanceSize.MICRO
                 ))
                 .vpcSubnets(
                         SubnetSelection.builder()

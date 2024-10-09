@@ -27,12 +27,12 @@ public class AwsResourcesProvisionApp {
                 .env(evn)
                 .build());
 
-//        new UbuntuArmStack(app, "UbuntuArmStack", StackProps.builder()
-//                .env(Environment.builder()
-//                        .account(System.getenv("CDK_DEFAULT_ACCOUNT"))
-//                .region(System.getenv("CDK_DEFAULT_REGION")) // Replace with your region
-//                        .build())
-//                .build());
+        new UbuntuArmStack(app, "UbuntuArmStack", StackProps.builder()
+                .env(Environment.builder()
+                        .account(System.getenv("CDK_DEFAULT_ACCOUNT"))
+                .region(System.getenv("CDK_DEFAULT_REGION")) // Replace with your region
+                        .build())
+                .build());
 
 
         app.synth();

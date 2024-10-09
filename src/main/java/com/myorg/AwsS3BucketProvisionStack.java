@@ -19,6 +19,7 @@ public class AwsS3BucketProvisionStack extends Stack {
         Bucket bucket = Bucket.Builder.create(this, "amzn-s3-demo-bucket")
                 .versioned(true)
                 .encryption(BucketEncryption.KMS_MANAGED)
+                .bucketName("demo-basket")
                 .build();
     }
 }
