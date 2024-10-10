@@ -69,3 +69,6 @@ public class AwsResourcesProvisionApp {
     }
 }
 
+//todo: confirm how the bucket id or name used by cloudformation is named
+//todo: confirm hiw the CDKToolkit[this becomes the stackname in cf] used by cdk id or name is generated
+
