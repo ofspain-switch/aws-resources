@@ -75,7 +75,7 @@ jobs:
   deprovision:
     runs-on: ubuntu-latest
     needs: [provision]
-    if: github.ref == 'refs/heads/decommission'
+ #   if: github.ref == 'refs/heads/decommission'
     steps:
 
       - name: Checkout code
@@ -90,4 +90,4 @@ jobs:
 
       - name: Deprovision Resources
         run: |
-          cdk destroy --force
+          cdk destroy --all --force
