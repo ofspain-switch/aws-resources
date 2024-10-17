@@ -13,6 +13,9 @@ jobs:
       CDK_DEFAULT_ACCOUNT: ${{ secrets.AWS_ACCOUNT }}
 
     steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
       - name: Setup for CDK and stack in java
         uses: ./.github/actions/action@main
         with:
