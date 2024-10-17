@@ -17,7 +17,7 @@ jobs:
         uses: actions/checkout@v2
 
       - name: Setup for CDK and stack in java
-        uses: ./.github/actions/action
+        uses: ./.github/actions
         with:
           aws-region: ${{ env.CDK_DEFAULT_REGION }}
 
@@ -32,7 +32,7 @@ jobs:
 
     steps:
       - name: Setup for CDK
-        uses: ./.github/actions/action
+        uses: ./.github/actions
         with:
           aws-region: ${{ env.CDK_DEFAULT_REGION }}
 
