@@ -20,6 +20,8 @@ jobs:
         uses: ./.github/actions
         with:
           aws-region: ${{ env.CDK_DEFAULT_REGION }}
+          aws-access-key-id: ${{ secret.AWS_ACCESS_KEY_ID }}
+          aws-access-secret-key: ${{ secret.AWS_SECRET_ACCESS_KEY }}
 
       - name: Provision Resources
         run: |
