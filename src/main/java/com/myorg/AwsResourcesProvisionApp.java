@@ -1,12 +1,9 @@
 package com.myorg;
 
-import com.fasterxml.jackson.core.Version;
-import software.amazon.awscdk.App;
-import software.amazon.awscdk.Environment;
-import software.amazon.awscdk.StackProps;
-import software.amazon.awscdk.cxapi.CloudArtifact;
+import software.amazon.awscdk.*;
 import software.amazon.awscdk.cxapi.CloudAssembly;
 import software.amazon.awscdk.cxapi.CloudFormationStackArtifact;
+import software.amazon.awscdk.services.ec2.Vpc;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -23,16 +20,21 @@ public class AwsResourcesProvisionApp {
                 .region(System.getenv("CDK_DEFAULT_REGION"))
                 .build();
         new AwsS3BucketProvisionStack(app, "s3-bucket",
-                StackProps.builder().stackName("Git-provision-stack")
+                StackProps.builder().stackName("CDK_PROVISIONING-STACK")
                 .env(evn)
                 .build());
 
-        new UbuntuArmStack(app, "UbuntuArmStack", StackProps.builder()
+        StackProps stackProps = StackProps.builder()
                 .env(Environment.builder()
                         .account(System.getenv("CDK_DEFAULT_ACCOUNT"))
-                .region(System.getenv("CDK_DEFAULT_REGION")) // Replace with your region
+                        .region(System.getenv("CDK_DEFAULT_REGION")) // Replace with your region
                         .build())
-                .build());
+                .build();
+
+        VPCResource vpcResource = new VPCResource(app, "test", stackProps);
+        Vpc vpc = vpcResource.getVpc();
+
+//        new UbuntuArmStack(app, "UbuntuArmStack", stackProps, vpc);
 
 
         app.synth();
@@ -67,7 +69,27 @@ public class AwsResourcesProvisionApp {
         }
         return properties;
     }
+
+
+    private void output(App scope, Vpc vpc){
+        CfnOutput.Builder.create(scope, "output-vpc")
+                .value(vpc.getVpcId())
+                .build();
+
+//        CfnOutput.Builder.create(this, "PublicSubnetId")
+//                .value(vpc.getPublicSubnets().get(0).getSubnetId())
+//                .build();
+        /**
+         * {
+         *   "MyVpcStack": {
+         *     "VpcId": "vpc-123456",
+         *     "PublicSubnetId": "subnet-123456"
+         *   }
+         * }
+         */
+    }
 }
+
 
 //todo: confirm how the bucket id or name used by cloudformation is named
 //todo: confirm hiw the CDKToolkit[this becomes the stackname in cf] used by cdk id or name is generated

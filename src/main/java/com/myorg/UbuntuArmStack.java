@@ -10,16 +10,14 @@ import java.util.Map;
 
 //todo: link up with main for provisioning
 public class UbuntuArmStack extends Stack {
-    public UbuntuArmStack(final Construct scope, final String id) {
-        this(scope, id, null);
+    public UbuntuArmStack(final Construct scope, final String id, Vpc vpc) {
+        this(scope, id, null, null);
     }
 
-    public UbuntuArmStack(final Construct scope, final String id, final StackProps props) {
+    public UbuntuArmStack(final Construct scope, final String id, final StackProps props,
+                          Vpc vpc) {
         super(scope, id, props);
 
-        Vpc vpc = Vpc.Builder.create(this, id + "-vpc")
-                .vpcName(id + "-vpc")
-                .build();
 
         final ISecurityGroup securityGroup = SecurityGroup.Builder.create(this, id + "-sg")
                 .securityGroupName(id)
@@ -46,6 +44,7 @@ public class UbuntuArmStack extends Stack {
                 ))
                 .vpcSubnets(
                         SubnetSelection.builder()
+                                .subnets(vpc.getPublicSubnets())
                                 .subnetType(SubnetType.PUBLIC)
                                 .build()
                 )
