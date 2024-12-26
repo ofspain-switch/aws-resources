@@ -68,7 +68,7 @@ public class VPCResource extends Stack{
 
 
         //configure rules for the private subnets
-        NetworkAcl privateACL = privateAccessToInternet();
+        NetworkAcl privateACL = privateAccessToInternet(scope);
         CfnSubnet privateSubnet = (CfnSubnet) vpc.getPrivateSubnets().get(0).getNode().getDefaultChild();
         CfnSubnetNetworkAclAssociation.Builder.create(this, "PrivateSubnetNetworkAclAssociation")
                 .networkAclId(privateACL.getNetworkAclId())
@@ -111,11 +111,11 @@ public class VPCResource extends Stack{
     }
 
 
-    private NetworkAcl privateAccessToInternet(){
+    private NetworkAcl privateAccessToInternet(final Construct scope){
 
 
         // Private Network ACL for the private subnet
-        NetworkAcl privateAcl = NetworkAcl.Builder.create(this, "PrivateNetworkAcl")
+        NetworkAcl privateAcl = NetworkAcl.Builder.create(scope, "PrivateNetworkAcl")
                 .vpc(vpc)
                 .subnetSelection(SubnetSelection.builder()
                         .subnetType(SubnetType.PRIVATE_WITH_EGRESS)
@@ -212,12 +212,12 @@ public class VPCResource extends Stack{
                 .build();
     }
 
-    private String associateNATGateway(Subnet subnet, final Stack scope){
+    private String associateNATGateway(Subnet subnet, final Stack stack){
 
         String id = generateName("ngw");
-        CfnEIP eip = CfnEIP.Builder.create(scope, generateName("eip"))
+        CfnEIP eip = CfnEIP.Builder.create(stack, generateName("eip"))
                 .build();
-        CfnNatGateway natGateway = CfnNatGateway.Builder.create(scope, id)
+        CfnNatGateway natGateway = CfnNatGateway.Builder.create(stack, id)
                 .allocationId(eip.getAttrAllocationId())//todo:exsiting elastic ip in my account
                 .subnetId(subnet.getSubnetId())
                 .build();
