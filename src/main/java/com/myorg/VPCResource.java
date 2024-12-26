@@ -76,11 +76,9 @@ public class VPCResource extends Stack{
 
                 .build();
 
-
         attachFlowLog();
 
         Tags.of(vpc).add("Environment", stackPrefix);
-       // Tags.of(vpc).add("provisioning", "AWS_CDK");
 
 
     }
