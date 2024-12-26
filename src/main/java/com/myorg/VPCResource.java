@@ -57,7 +57,7 @@ public class VPCResource extends Stack{
 
         Subnet prSubnet = (Subnet) vpc.getPrivateSubnets().get(0);
 
-        String natId = associateNATGateway(prSubnet, scope);
+        String natId = associateNATGateway(prSubnet, this);
 
         prSubnet.addRoute("CustomRoute", AddRouteOptions.builder()
                 .destinationCidrBlock("0.0.0.0/0")
@@ -212,7 +212,7 @@ public class VPCResource extends Stack{
                 .build();
     }
 
-    private String associateNATGateway(Subnet subnet, final Construct scope){
+    private String associateNATGateway(Subnet subnet, final Stack scope){
 
         String id = generateName("ngw");
         CfnEIP eip = CfnEIP.Builder.create(scope, generateName("eip"))
