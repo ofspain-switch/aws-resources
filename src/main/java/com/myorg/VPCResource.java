@@ -68,7 +68,7 @@ public class VPCResource extends Stack{
 
 
         //configure rules for the private subnets
-        NetworkAcl privateACL = privateAccessToInternet(scope);
+        NetworkAcl privateACL = privateAccessToInternet();
         CfnSubnet privateSubnet = (CfnSubnet) vpc.getPrivateSubnets().get(0).getNode().getDefaultChild();
         CfnSubnetNetworkAclAssociation.Builder.create(this, "PrivateSubnetNetworkAclAssociation")
                 .networkAclId(privateACL.getNetworkAclId())
@@ -111,11 +111,11 @@ public class VPCResource extends Stack{
     }
 
 
-    private NetworkAcl privateAccessToInternet(final Construct scope){
+    private NetworkAcl privateAccessToInternet(){
 
 
         // Private Network ACL for the private subnet
-        NetworkAcl privateAcl = NetworkAcl.Builder.create(scope, "PrivateNetworkAcl")
+        NetworkAcl privateAcl = NetworkAcl.Builder.create(this, "PrivateNetworkAcl")
                 .vpc(vpc)
                 .subnetSelection(SubnetSelection.builder()
                         .subnetType(SubnetType.PRIVATE_WITH_EGRESS)
