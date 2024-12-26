@@ -20,7 +20,7 @@ public class AwsResourcesProvisionApp {
                 .region(System.getenv("CDK_DEFAULT_REGION"))
                 .build();
         new AwsS3BucketProvisionStack(app, "s3-bucket",
-                StackProps.builder().stackName("CDK_PROVISIONING-STACK")
+                StackProps.builder().stackName("CDK-PROVISIONING-STACK")// todo: must match ^[A-Za-z][A-Za-z0-9-]*$
                 .env(evn)
                 .build());
 
