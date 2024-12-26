@@ -33,8 +33,8 @@ public class VPCResource extends Stack{
                 .maxAzs(2)
                 .ipAddresses(IpAddresses.cidr("192.168.0.0/16"))
                 .subnetConfiguration(new ArrayList(){{
-                    add(buildSubnet(SubnetType.PUBLIC));
-                    add(buildSubnet(SubnetType.PRIVATE_WITH_EGRESS));
+                    add(buildSubnet(stackPrefix,SubnetType.PUBLIC));
+                    add(buildSubnet(stackPrefix,SubnetType.PRIVATE_WITH_EGRESS));
                 }})
                 .build();
 
@@ -183,9 +183,9 @@ public class VPCResource extends Stack{
         return privateAcl;
     }
 
-    private SubnetConfiguration buildSubnet(SubnetType type){
+    private SubnetConfiguration buildSubnet(String vpcPrefix, SubnetType type){
         boolean isPublic = SubnetType.PUBLIC.equals(type);
-        String subnetName = generateName((isPublic ? "public" : "private") +"-subnet");
+        String subnetName = vpcPrefix + (isPublic ? "-public" : "-private") +"-subnet";
 
         return SubnetConfiguration.builder()
                 .name(subnetName)
