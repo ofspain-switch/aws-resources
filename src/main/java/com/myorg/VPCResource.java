@@ -47,11 +47,14 @@ public class VPCResource extends Stack{
 
 
         CfnSubnet publicSubnet = (CfnSubnet) vpc.getPublicSubnets().get(0).getNode().getDefaultChild();
-        CfnSubnetRouteTableAssociation.Builder.create(this, generateName("","PublicSubnetRouteTableAssociation"))
+
+        CfnSubnetRouteTableAssociation publicAssociation = CfnSubnetRouteTableAssociation.Builder.create(this, generateName("","PublicSubnetRouteTableAssociation"))
                 .routeTableId(publicRouteTable.getRef())
                 .subnetId(publicSubnet.getRef())
 
                 .build();
+        publicAssociation.getNode().addDependency(publicSubnet, publicRouteTable);
+
         /**note no special rule is needed for public subnet since we are opening it for free flow**/
 
 
@@ -69,13 +72,13 @@ public class VPCResource extends Stack{
         //associate private subnet with the private network acl
 
         CfnSubnet privateSubnet = (CfnSubnet) vpc.getPrivateSubnets().get(0).getNode().getDefaultChild();
-        CfnSubnetNetworkAclAssociation association = CfnSubnetNetworkAclAssociation.Builder.create(this, "PrivateSubnetNetworkAclAssociation")
+        CfnSubnetNetworkAclAssociation privateAssociation = CfnSubnetNetworkAclAssociation.Builder.create(this, "PrivateSubnetNetworkAclAssociation")
                 .networkAclId(privateACL.getNetworkAclId())
                 .subnetId(privateSubnet.getRef())
 
                 .build();
 
-        association.getNode().addDependency(privateACL, privateSubnet);
+        privateAssociation.getNode().addDependency(privateACL, privateSubnet);
 
 
         attachFlowLog();
