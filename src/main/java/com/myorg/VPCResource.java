@@ -251,15 +251,25 @@ public class VPCResource extends Stack{
         CfnEIP eip = CfnEIP.Builder.create(stack, generateName("","eip"))
                 .build();
         CfnNatGateway natGateway = CfnNatGateway.Builder.create(stack, id)
-                .allocationId(eip.getAttrAllocationId())//todo:exsiting elastic ip in my account
+                .allocationId(eip.getAttrAllocationId())
                 .subnetId(subnet.getSubnetId())
                 .build();
 
-        return id;
+        return natGateway.getRef();
 
     }
 
-
+//String routeId = generateName("nat", "route");
+//    CfnRoute route = CfnRoute.Builder.create(stack, routeId)
+//            .routeTableId(((CfnSubnet) subnet.getNode().getDefaultChild()).getAttrRouteTableId()) // Route table for the subnet
+//            .destinationCidrBlock("0.0.0.0/0") // Route all traffic
+//            .natGatewayId(natGateway.getRef()) // Reference the NAT Gateway
+//            .build();
+//
+//    // Add dependency to ensure NAT Gateway is created before the route
+//    route.addDependsOn(natGateway);
+//
+//    return natGateway.getRef();
 
     public Vpc getVpc(){
         return vpc;
