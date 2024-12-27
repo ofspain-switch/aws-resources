@@ -89,12 +89,16 @@ public class VPCResource extends Stack{
 
 
     private CfnInternetGateway associateIGW(){
-        CfnInternetGateway internetGateway = CfnInternetGateway.Builder.create(this, "InternetGateway").build();
+        Stack igwStack = new Stack();
+        CfnInternetGateway internetGateway = CfnInternetGateway.Builder
+                .create(igwStack, "InternetGateway").build();
         String id = generateName("igw");
         CfnVPCGatewayAttachment.Builder.create(this, id)
                 .vpcId(vpc.getVpcId())
                 .internetGatewayId(internetGateway.getRef())
                 .build();
+
+
 
         return internetGateway;
     }
