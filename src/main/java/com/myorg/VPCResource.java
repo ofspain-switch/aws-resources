@@ -48,7 +48,8 @@ public class VPCResource extends Stack{
 
         CfnSubnet publicSubnet = (CfnSubnet) vpc.getPublicSubnets().get(0).getNode().getDefaultChild();
 
-        CfnSubnetRouteTableAssociation publicAssociation = CfnSubnetRouteTableAssociation.Builder.create(this, generateName("","PublicSubnetRouteTableAssociation"))
+        CfnSubnetRouteTableAssociation publicAssociation = CfnSubnetRouteTableAssociation.Builder
+                .create(this, generateName("","PublicSubnetRouteTableAssociation"))
                 .routeTableId(publicRouteTable.getRef())
                 .subnetId(publicSubnet.getRef())
 
@@ -72,7 +73,8 @@ public class VPCResource extends Stack{
         //associate private subnet with the private network acl
 
         CfnSubnet privateSubnet = (CfnSubnet) vpc.getPrivateSubnets().get(0).getNode().getDefaultChild();
-        CfnSubnetNetworkAclAssociation privateAssociation = CfnSubnetNetworkAclAssociation.Builder.create(this, "PrivateSubnetNetworkAclAssociation")
+        CfnSubnetNetworkAclAssociation privateAssociation = CfnSubnetNetworkAclAssociation.Builder
+                .create(this, generateName("","PrivateSubnetNetworkAclAssociation"))
                 .networkAclId(privateACL.getNetworkAclId())
                 .subnetId(privateSubnet.getRef())
 
@@ -132,19 +134,6 @@ public class VPCResource extends Stack{
                         .build())
                 .build();
 
-        //NetworkAcl networkAcl = NetworkAcl.Builder.create(this, "MyNetworkAcl")
-        //         .vpc(vpc)
-        //         // the properties below are optional
-        //         .networkAclName("networkAclName")
-        //         .subnetSelection(SubnetSelection.builder()
-        //                 .availabilityZones(List.of("availabilityZones"))
-        //                 .onePerAz(false)
-        //                 .subnetFilters(List.of(subnetFilter))
-        //                 .subnetGroupName("subnetGroupName")
-        //                 .subnets(List.of(subnet))
-        //                 .subnetType(SubnetType.PRIVATE_ISOLATED)
-        //                 .build())
-        //         .build();
 
 
         // Allow outbound HTTPS traffic
