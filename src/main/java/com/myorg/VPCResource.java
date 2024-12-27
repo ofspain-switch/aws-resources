@@ -120,7 +120,7 @@ public class VPCResource extends Stack{
                 .vpc(vpc)
                 .subnetSelection(SubnetSelection
                         .builder()
-                        .subnets(Collections.singletonList(subnet))
+                       // .subnets(Collections.singletonList(subnet))
                         .subnetType(SubnetType.PRIVATE_WITH_EGRESS)
                         .build())
                 .build();
