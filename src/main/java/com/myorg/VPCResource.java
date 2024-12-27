@@ -69,11 +69,14 @@ public class VPCResource extends Stack{
         //associate private subnet with the private network acl
 
         CfnSubnet privateSubnet = (CfnSubnet) vpc.getPrivateSubnets().get(0).getNode().getDefaultChild();
-        CfnSubnetNetworkAclAssociation.Builder.create(this, "PrivateSubnetNetworkAclAssociation")
+        CfnSubnetNetworkAclAssociation association = CfnSubnetNetworkAclAssociation.Builder.create(this, "PrivateSubnetNetworkAclAssociation")
                 .networkAclId(privateACL.getNetworkAclId())
                 .subnetId(privateSubnet.getRef())
 
                 .build();
+
+        association.getNode().addDependency(privateACL, privateSubnet);
+
 
         attachFlowLog();
 
