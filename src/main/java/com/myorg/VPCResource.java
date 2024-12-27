@@ -22,7 +22,7 @@ public class VPCResource extends Stack{
 
     public VPCResource(final Construct scope, final String stackPrefix, final StackProps props){
         super(scope, stackPrefix, props);
-        this.stackPrefix = stackPrefix;
+        this.stackPrefix = stackPrefix + GeneralUtil.generateRandomString(25);
         String vpcId = stackPrefix + "-" + stackPrefix+GeneralUtil.generateRandomString(30) +"-vpc";
 
         vpc = Vpc.Builder.create(this, vpcId)
@@ -82,6 +82,7 @@ public class VPCResource extends Stack{
         attachFlowLog();
 
         Tags.of(vpc).add("Environment", stackPrefix);
+        Tags.of(vpc).add("family", this.stackPrefix);
 
 
     }
@@ -221,8 +222,7 @@ public class VPCResource extends Stack{
 
 
     private String generateName(String suffix){
-        return new StringBuilder(stackPrefix).append("-")
-                .append(vpc.getVpcId())
+        return new StringBuilder(stackPrefix)
                 .append("-")
                 .append(suffix)
                 .toString();
