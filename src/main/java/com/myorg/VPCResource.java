@@ -8,6 +8,7 @@ import software.amazon.awscdk.services.ec2.*;
 import software.constructs.Construct;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class VPCResource extends Stack{
@@ -64,17 +65,17 @@ public class VPCResource extends Stack{
                 .routerId(natId)
                 .routerType(RouterType.NAT_GATEWAY)
                 .build());
-
+        privateAccessToInternet(prSubnet);
 
 
         //configure rules for the private subnets
-        NetworkAcl privateACL = privateAccessToInternet();
-        CfnSubnet privateSubnet = (CfnSubnet) vpc.getPrivateSubnets().get(0).getNode().getDefaultChild();
-        CfnSubnetNetworkAclAssociation.Builder.create(this, "PrivateSubnetNetworkAclAssociation")
-                .networkAclId(privateACL.getNetworkAclId())
-                .subnetId(privateSubnet.getRef())
 
-                .build();
+      //  CfnSubnet privateSubnet = (CfnSubnet) vpc.getPrivateSubnets().get(0).getNode().getDefaultChild();
+//        CfnSubnetNetworkAclAssociation.Builder.create(this, "PrivateSubnetNetworkAclAssociation")
+//                .networkAclId(privateACL.getNetworkAclId())
+//                .subnetId(privateSubnet.getRef())
+//
+//                .build();
 
         attachFlowLog();
 
@@ -111,16 +112,32 @@ public class VPCResource extends Stack{
     }
 
 
-    private NetworkAcl privateAccessToInternet(){
+    private NetworkAcl privateAccessToInternet(Subnet subnet){
 
 
         // Private Network ACL for the private subnet
         NetworkAcl privateAcl = NetworkAcl.Builder.create(this, "PrivateNetworkAcl")
                 .vpc(vpc)
-                .subnetSelection(SubnetSelection.builder()
+                .subnetSelection(SubnetSelection
+                        .builder()
+                        .subnets(Collections.singletonList(subnet))
                         .subnetType(SubnetType.PRIVATE_WITH_EGRESS)
                         .build())
                 .build();
+
+        //NetworkAcl networkAcl = NetworkAcl.Builder.create(this, "MyNetworkAcl")
+        //         .vpc(vpc)
+        //         // the properties below are optional
+        //         .networkAclName("networkAclName")
+        //         .subnetSelection(SubnetSelection.builder()
+        //                 .availabilityZones(List.of("availabilityZones"))
+        //                 .onePerAz(false)
+        //                 .subnetFilters(List.of(subnetFilter))
+        //                 .subnetGroupName("subnetGroupName")
+        //                 .subnets(List.of(subnet))
+        //                 .subnetType(SubnetType.PRIVATE_ISOLATED)
+        //                 .build())
+        //         .build();
 
 
         // Allow outbound HTTPS traffic
