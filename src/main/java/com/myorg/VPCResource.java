@@ -18,7 +18,7 @@ public class VPCResource extends Stack{
     private final Vpc vpc;
     private final String stackPrefix;
 
-    private final CfnInternetGateway igw;
+   // private final CfnInternetGateway igw;
 
     public VPCResource(final Construct scope, final String stackPrefix, final StackProps props){
         super(scope, stackPrefix, props);
@@ -39,7 +39,7 @@ public class VPCResource extends Stack{
                 }})
                 .build();
 
-       igw =  associateIGW();
+        associateIGW();
 
         CfnRouteTable publicRouteTable = provisionPublicRouteToIGW();
 
@@ -89,14 +89,13 @@ public class VPCResource extends Stack{
 
 
     private CfnInternetGateway associateIGW(){
-        Stack igwStack = new Stack();
         CfnInternetGateway internetGateway = CfnInternetGateway.Builder
-                .create(igwStack, "InternetGateway").build();
+                .create(this, "InternetGateway").build();
         String id = generateName("igw");
-        CfnVPCGatewayAttachment.Builder.create(this, id)
-                .vpcId(vpc.getVpcId())
-                .internetGatewayId(internetGateway.getRef())
-                .build();
+//        CfnVPCGatewayAttachment.Builder.create(this, id)
+//                .vpcId(vpc.getVpcId())
+//                .internetGatewayId(internetGateway.getRef())
+//                .build();
 
 
 
@@ -113,7 +112,7 @@ public class VPCResource extends Stack{
         CfnRoute route = CfnRoute.Builder.create(this, routeTableId.replace("-rtt", "-rt"))
                 .routeTableId(routeTable.getRef())
                 .destinationCidrBlock("0.0.0.0/0") // Route all traffic to the internet
-                .gatewayId(igw.getRef())
+                .gatewayId(vpc.getInternetGatewayId())
                 .build();
         return routeTable;
     }
