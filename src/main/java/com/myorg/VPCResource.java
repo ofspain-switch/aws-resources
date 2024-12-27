@@ -60,11 +60,7 @@ public class VPCResource extends Stack{
 
         String natId = associateNATGateway(prSubnet, this);
 
-        prSubnet.addRoute("CustomRoute", AddRouteOptions.builder()
-                .destinationCidrBlock("0.0.0.0/0")
-                .routerId(natId)
-                .routerType(RouterType.NAT_GATEWAY)
-                .build());
+
 
 
         //configure rules for the private subnets
@@ -86,7 +82,6 @@ public class VPCResource extends Stack{
 
 
     }
-
 
     private CfnInternetGateway associateIGW(){
         CfnInternetGateway internetGateway = CfnInternetGateway.Builder
@@ -254,6 +249,12 @@ public class VPCResource extends Stack{
                 .allocationId(eip.getAttrAllocationId())
                 .subnetId(subnet.getSubnetId())
                 .build();
+
+        subnet.addRoute("CustomRoute", AddRouteOptions.builder()
+                .destinationCidrBlock("0.0.0.0/0")
+                .routerId(natGateway.getRef())
+                .routerType(RouterType.NAT_GATEWAY)
+                .build());
 
         return natGateway.getRef();
 
