@@ -65,17 +65,19 @@ public class VPCResource extends Stack{
                 .routerId(natId)
                 .routerType(RouterType.NAT_GATEWAY)
                 .build());
-        privateAccessToInternet(prSubnet);
 
 
         //configure rules for the private subnets
+        NetworkAcl privateACL = privateAccessToInternet();
 
-      //  CfnSubnet privateSubnet = (CfnSubnet) vpc.getPrivateSubnets().get(0).getNode().getDefaultChild();
-//        CfnSubnetNetworkAclAssociation.Builder.create(this, "PrivateSubnetNetworkAclAssociation")
-//                .networkAclId(privateACL.getNetworkAclId())
-//                .subnetId(privateSubnet.getRef())
-//
-//                .build();
+        //associate private subnet with the private network acl
+
+        CfnSubnet privateSubnet = (CfnSubnet) vpc.getPrivateSubnets().get(0).getNode().getDefaultChild();
+        CfnSubnetNetworkAclAssociation.Builder.create(this, "PrivateSubnetNetworkAclAssociation")
+                .networkAclId(privateACL.getNetworkAclId())
+                .subnetId(privateSubnet.getRef())
+
+                .build();
 
         attachFlowLog();
 
@@ -112,7 +114,7 @@ public class VPCResource extends Stack{
     }
 
 
-    private NetworkAcl privateAccessToInternet(Subnet subnet){
+    private NetworkAcl privateAccessToInternet(){
 
 
         // Private Network ACL for the private subnet
@@ -142,6 +144,7 @@ public class VPCResource extends Stack{
 
         // Allow outbound HTTPS traffic
         privateAcl.addEntry("AllowOutboundHTTPS", NetworkAclEntryProps.builder()
+                .networkAcl(privateAcl)
                 .ruleNumber(100)
                 .cidr(AclCidr.ipv4("0.0.0.0/0"))
                 .traffic(AclTraffic.tcpPort(443)) // HTTPS traffic
@@ -151,6 +154,7 @@ public class VPCResource extends Stack{
 
 // Allow outbound HTTP traffic
         privateAcl.addEntry("AllowOutboundHTTP", NetworkAclEntryProps.builder()
+                .networkAcl(privateAcl)
                 .ruleNumber(110)
                 .cidr(AclCidr.ipv4("0.0.0.0/0"))
                 .traffic(AclTraffic.tcpPort(80)) // HTTP traffic
@@ -160,6 +164,7 @@ public class VPCResource extends Stack{
 
 // Allow outbound DNS traffic (UDP)
         privateAcl.addEntry("AllowOutboundDNS", NetworkAclEntryProps.builder()
+                .networkAcl(privateAcl)
                 .ruleNumber(120)
                 .cidr(AclCidr.ipv4("0.0.0.0/0"))
                 .traffic(AclTraffic.udpPort(53)) // DNS traffic
@@ -170,6 +175,7 @@ public class VPCResource extends Stack{
 
         // Allow inbound traffic for HTTPS responses
         privateAcl.addEntry("AllowInboundHTTPSResponses", NetworkAclEntryProps.builder()
+                .networkAcl(privateAcl)
                 .ruleNumber(200)
                 .cidr(AclCidr.ipv4("0.0.0.0/0"))
                 .traffic(AclTraffic.tcpPortRange(1024, 65535)) // Ephemeral port range
@@ -179,6 +185,7 @@ public class VPCResource extends Stack{
 
 // Allow inbound traffic for HTTP responses
         privateAcl.addEntry("AllowInboundHTTPResponses", NetworkAclEntryProps.builder()
+                .networkAcl(privateAcl)
                 .ruleNumber(210)
                 .cidr(AclCidr.ipv4("0.0.0.0/0"))
                 .traffic(AclTraffic.tcpPortRange(1024, 65535)) // Ephemeral port range
@@ -188,6 +195,7 @@ public class VPCResource extends Stack{
 
 // Allow inbound DNS responses
         privateAcl.addEntry("AllowInboundDNSResponses", NetworkAclEntryProps.builder()
+                .networkAcl(privateAcl)
                 .ruleNumber(220)
                 .cidr(AclCidr.ipv4("0.0.0.0/0"))
                 .traffic(AclTraffic.udpPort(53)) // DNS traffic
