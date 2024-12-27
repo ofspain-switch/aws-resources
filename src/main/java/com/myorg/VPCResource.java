@@ -22,7 +22,7 @@ public class VPCResource extends Stack{
 
     public VPCResource(final Construct scope, final String stackPrefix, final StackProps props){
         super(scope, stackPrefix, props);
-        this.stackPrefix = stackPrefix + GeneralUtil.generateRandomString(25);
+        this.stackPrefix = stackPrefix + "-"+GeneralUtil.generateRandomString(25);
         String vpcId = stackPrefix + "-" + stackPrefix+GeneralUtil.generateRandomString(30) +"-vpc";
 
         vpc = Vpc.Builder.create(this, vpcId)
@@ -47,7 +47,7 @@ public class VPCResource extends Stack{
 
 
         CfnSubnet publicSubnet = (CfnSubnet) vpc.getPublicSubnets().get(0).getNode().getDefaultChild();
-        CfnSubnetRouteTableAssociation.Builder.create(this, generateName("PublicSubnetRouteTableAssociation"))
+        CfnSubnetRouteTableAssociation.Builder.create(this, generateName("","PublicSubnetRouteTableAssociation"))
                 .routeTableId(publicRouteTable.getRef())
                 .subnetId(publicSubnet.getRef())
 
@@ -91,7 +91,7 @@ public class VPCResource extends Stack{
     private CfnInternetGateway associateIGW(){
         CfnInternetGateway internetGateway = CfnInternetGateway.Builder
                 .create(this, "InternetGateway").build();
-        String id = generateName("igw");
+        String id = generateName("","igw");
 //        CfnVPCGatewayAttachment.Builder.create(this, id)
 //                .vpcId(vpc.getVpcId())
 //                .internetGatewayId(internetGateway.getRef())
@@ -104,7 +104,7 @@ public class VPCResource extends Stack{
 
 
     private CfnRouteTable provisionPublicRouteToIGW(){
-        String routeTableId = generateName("rtt");
+        String routeTableId = generateName("","rtt");
 
         CfnRouteTable routeTable = CfnRouteTable.Builder.create(this, routeTableId)
                 .vpcId(vpc.getVpcId())
@@ -224,15 +224,20 @@ public class VPCResource extends Stack{
     }
 
 
-    private String generateName(String suffix){
-        return new StringBuilder(stackPrefix)
-                .append("-")
-                .append(suffix)
-                .toString();
+    private String generateName(String prefix, String suffix) {
+        StringBuilder nameBuilder = new StringBuilder();
+
+        if (GeneralUtil.validString(prefix)) {
+            nameBuilder.append(prefix).append("-");
+        }
+
+        nameBuilder.append(stackPrefix).append("-").append(suffix);
+        return nameBuilder.toString();
     }
 
+
     private void attachFlowLog(){
-        String name = generateName("flow-log");
+        String name = generateName("", "flow-log");
         FlowLog.Builder.create(this, name)
                 .resourceType(FlowLogResourceType.fromVpc(vpc))
                 .trafficType(FlowLogTrafficType.ALL)
@@ -242,8 +247,8 @@ public class VPCResource extends Stack{
 
     private String associateNATGateway(Subnet subnet, final Stack stack){
 
-        String id = generateName("ngw");
-        CfnEIP eip = CfnEIP.Builder.create(stack, generateName("eip"))
+        String id = generateName("nat","ngw");
+        CfnEIP eip = CfnEIP.Builder.create(stack, generateName("","eip"))
                 .build();
         CfnNatGateway natGateway = CfnNatGateway.Builder.create(stack, id)
                 .allocationId(eip.getAttrAllocationId())//todo:exsiting elastic ip in my account
