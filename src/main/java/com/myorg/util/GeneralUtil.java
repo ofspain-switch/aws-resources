@@ -26,4 +26,8 @@ public class GeneralUtil {
 
         return sb.toString();
     }
+
+    public static boolean validString(String s){
+        return null != s && !s.isEmpty();
+    }
 }
