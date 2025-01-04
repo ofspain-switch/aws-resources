@@ -30,26 +30,27 @@ public class CustomizedCloud extends Stack {
 
 
     public CustomizedCloud(final Construct scope, final String stackPrefix, final StackProps props){
+        super(scope, stackPrefix, props);
 
-        customizedVpc = new CustomizedVpc(scope, stackPrefix+"-vpc", props).getVpc();
-        elasticIp = CfnEIP.Builder.create(scope, stackPrefix+"-eip").build();
-        associateIGW(scope,stackPrefix);
-        publicRouteTable = createRouteTable(scope,stackPrefix+"-public");
-        privateRouteTable = createRouteTable(scope,stackPrefix+"-private");
+        customizedVpc = new CustomizedVpc(this, stackPrefix+"-vpc", props).getVpc();
+        elasticIp = CfnEIP.Builder.create(this, stackPrefix+"-eip").build();
+        associateIGW(this,stackPrefix);
+        publicRouteTable = createRouteTable(this,stackPrefix+"-public");
+        privateRouteTable = createRouteTable(this,stackPrefix+"-private");
 
-        CustomizedSubnet publicSubnet = new CustomizedSubnet(scope, stackPrefix+"-public_subnet", props, CustomizedSubnet.SubnetType.PUBLIC);
+        CustomizedSubnet publicSubnet = new CustomizedSubnet(this, stackPrefix+"-public_subnet", props, CustomizedSubnet.SubnetType.PUBLIC);
         publicSubnets.add(publicSubnet.getCfnSubnet());
-        CustomizedSubnet privateSubnet = new CustomizedSubnet(scope, stackPrefix+"-private_subnet", props, CustomizedSubnet.SubnetType.PRIVATE_WITH_INGRESS_AND_EGRESS);
+        CustomizedSubnet privateSubnet = new CustomizedSubnet(this, stackPrefix+"-private_subnet", props, CustomizedSubnet.SubnetType.PRIVATE_WITH_INGRESS_AND_EGRESS);
         privateSubnets.add(privateSubnet.getCfnSubnet());
 
-        provisionNatGateway(scope, stackPrefix);
+        provisionNatGateway(this, stackPrefix);
 
 
-        associateRouteToSubnet(scope, stackPrefix+"-public-", publicSubnets.get(0), publicRouteTable);
-        associateRouteToSubnet(scope, stackPrefix+"-private-", privateSubnets.get(0), privateRouteTable);
+        associateRouteToSubnet(this, stackPrefix+"-public-", publicSubnets.get(0), publicRouteTable);
+        associateRouteToSubnet(this, stackPrefix+"-private-", privateSubnets.get(0), privateRouteTable);
 
-        createPrivateRoutes(scope, stackPrefix, 1);
-        createPublicRoutes(scope, stackPrefix, 1);
+        createPrivateRoutes(this, stackPrefix, 1);
+        createPublicRoutes(this, stackPrefix, 1);
     }
 
     private void associateIGW(Construct scope, String prefix){
