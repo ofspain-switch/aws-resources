@@ -45,7 +45,6 @@ public class VPCResource extends Stack{
 
 
 
-
         CfnSubnet publicSubnet = (CfnSubnet) vpc.getPublicSubnets().get(0).getNode().getDefaultChild();
 
         CfnSubnetRouteTableAssociation publicAssociation = CfnSubnetRouteTableAssociation.Builder
@@ -60,9 +59,9 @@ public class VPCResource extends Stack{
 
 
 
-        Subnet prSubnet = (Subnet) vpc.getPrivateSubnets().get(0);
+        //Subnet prSubnet = (Subnet) vpc.getPrivateSubnets().get(0);
 
-        String natId = associateNATGateway(prSubnet, this);
+      //  String natId = associateNATGateway(prSubnet, this);
 
 
 

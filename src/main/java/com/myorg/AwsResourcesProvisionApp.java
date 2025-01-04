@@ -14,15 +14,10 @@ public class AwsResourcesProvisionApp {
         App app = new App();
 //        Properties properties = loadVariables();
         Environment evn = Environment.builder()
-//                .account(properties.getProperty("region"))
-//                .region(properties.getProperty("account"))
                 .account(System.getenv("CDK_DEFAULT_ACCOUNT"))
                 .region(System.getenv("CDK_DEFAULT_REGION"))
                 .build();
-        new AwsS3BucketProvisionStack(app, "s3-bucket",
-                StackProps.builder().stackName("CDK-PROVISIONING-STACK")// todo: must match ^[A-Za-z][A-Za-z0-9-]*$
-                .env(evn)
-                .build());
+
 
         StackProps stackProps = StackProps.builder()
                 .env(Environment.builder()
@@ -31,10 +26,7 @@ public class AwsResourcesProvisionApp {
                         .build())
                 .build();
 
-        VPCResource vpcResource = new VPCResource(app, "test", stackProps);
-        Vpc vpc = vpcResource.getVpc();
-
-//        new UbuntuArmStack(app, "UbuntuArmStack", stackProps, vpc);
+        CustomizedCloud customizedCloud = new CustomizedCloud(app, "test", stackProps);
 
 
         app.synth();
@@ -71,23 +63,6 @@ public class AwsResourcesProvisionApp {
     }
 
 
-    private void output(App scope, Vpc vpc){
-        CfnOutput.Builder.create(scope, "output-vpc")
-                .value(vpc.getVpcId())
-                .build();
-
-//        CfnOutput.Builder.create(this, "PublicSubnetId")
-//                .value(vpc.getPublicSubnets().get(0).getSubnetId())
-//                .build();
-        /**
-         * {
-         *   "MyVpcStack": {
-         *     "VpcId": "vpc-123456",
-         *     "PublicSubnetId": "subnet-123456"
-         *   }
-         * }
-         */
-    }
 }
 
 
