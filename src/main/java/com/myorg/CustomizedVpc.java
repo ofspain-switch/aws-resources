@@ -29,7 +29,7 @@ public class CustomizedVpc extends Construct {
                 .enableDnsHostnames(true)
                 .enableDnsSupport(true)
                 .natGateways(0)
-                .maxAzs(azs)
+               // .maxAzs(azs)
                 .availabilityZones(fixAZ())
                 .ipAddresses(IpAddresses.cidr("192.168.0.0/16"))
                 .subnetConfiguration(Collections.emptyList())
