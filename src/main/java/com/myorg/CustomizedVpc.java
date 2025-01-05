@@ -2,10 +2,7 @@ package com.myorg;
 
 import com.myorg.util.GeneralUtil;
 import software.amazon.awscdk.StackProps;
-import software.amazon.awscdk.services.ec2.CfnVPC;
-import software.amazon.awscdk.services.ec2.IpAddresses;
-import software.amazon.awscdk.services.ec2.SubnetType;
-import software.amazon.awscdk.services.ec2.Vpc;
+import software.amazon.awscdk.services.ec2.*;
 import software.constructs.Construct;
 
 import java.util.ArrayList;
@@ -32,13 +29,31 @@ public class CustomizedVpc extends Construct {
                // .maxAzs(azs)
                 .availabilityZones(fixAZ())
                 .ipAddresses(IpAddresses.cidr("192.168.0.0/16"))
-                .subnetConfiguration(Collections.emptyList())
+                .subnetConfiguration(new ArrayList<>(){{
+                    add(buildSubnet(SubnetType.PUBLIC));
+                    add(buildSubnet(SubnetType.PRIVATE_WITH_EGRESS));
+                }})
                 .build();
     }
 
     private List<String> fixAZ(){
         //may use azs but throw illegalargument exception when azs is less than available azs
         return GeneralUtil.getAvailabilityZones().subList(0,2);
+    }
+
+    private SubnetConfiguration buildSubnet(SubnetType type){
+        boolean isPublic = SubnetType.PUBLIC.equals(type);
+        String subnetName = (isPublic ? "-public" : "-private") +"-subnet";
+
+        SubnetConfiguration.Builder configBuilder = SubnetConfiguration.builder()
+                .name(subnetName)
+                .subnetType(type);
+
+        if(isPublic){
+            configBuilder.mapPublicIpOnLaunch(true);
+        }
+        return configBuilder.build();
+
     }
 
     public Vpc getVpc(){
