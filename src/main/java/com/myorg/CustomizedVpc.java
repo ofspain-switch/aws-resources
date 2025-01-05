@@ -30,10 +30,10 @@ public class CustomizedVpc extends Construct {
                // .maxAzs(azs)
                 .availabilityZones(fixAZ())
                 .ipAddresses(IpAddresses.cidr("192.168.0.0/16"))
-                .subnetConfiguration(new ArrayList<>(){{
-                    add(buildSubnet(SubnetType.PUBLIC));
-                    add(buildSubnet(SubnetType.PRIVATE_WITH_EGRESS));
-                }})
+//                .subnetConfiguration(new ArrayList<>(){{
+//                    add(buildSubnet(id,SubnetType.PUBLIC));
+//                    add(buildSubnet(id,SubnetType.PRIVATE_WITH_EGRESS));
+//                }})
                 .build();
     }
 
@@ -42,13 +42,15 @@ public class CustomizedVpc extends Construct {
         return GeneralUtil.getAvailabilityZones().subList(0,2);
     }
 
-    private SubnetConfiguration buildSubnet(SubnetType type){
+    private SubnetConfiguration buildSubnet(String prefix, SubnetType type){
         boolean isPublic = SubnetType.PUBLIC.equals(type);
-        String subnetName = (isPublic ? "-public" : "-private") +"-subnet";
+        String subnetName = prefix + (isPublic ? "-public" : "-private") +"-subnet";
 
         SubnetConfiguration.Builder configBuilder = SubnetConfiguration.builder()
                 .name(subnetName)
-                .subnetType(type);
+                .subnetType(type)
+                .cidrMask(isPublic ? 24 : 25);
+
 
         if(isPublic){
             configBuilder.mapPublicIpOnLaunch(true);
