@@ -23,8 +23,8 @@ public class CustomizedCloud extends Stack {
     private CfnEIP elasticIp;
     private CfnInternetGateway internetGateway;
 
-    private List<CfnSubnet> privateSubnets;
-    private List<CfnSubnet> publicSubnets;
+    private List<CfnSubnet> privateSubnets = new ArrayList<>();
+    private List<CfnSubnet> publicSubnets = new ArrayList<>();
 
     private CfnNatGateway natGateway;
 
@@ -39,13 +39,15 @@ public class CustomizedCloud extends Stack {
         publicRouteTable = createRouteTable(this,stackPrefix+"-public");
         privateRouteTable = createRouteTable(this,stackPrefix+"-private");
 
-        CustomizedSubnet publicSubnet = new CustomizedSubnet(this, stackPrefix+"-public_subnet_"+ GeneralUtil.generateRandomString(5), props,
-                CustomizedSubnet.SubnetType.PUBLIC, customizedVpc.getVpcId(), "192.168.0.0/25");
-        publicSubnets.add(publicSubnet.getCfnSubnet());
+//        CustomizedSubnet publicSubnet = new CustomizedSubnet(this, stackPrefix+"-public_subnet_"+ GeneralUtil.generateRandomString(5), props,
+//                CustomizedSubnet.SubnetType.PUBLIC, customizedVpc.getVpcId(), "192.168.0.0/25");
 
-        CustomizedSubnet privateSubnet = new CustomizedSubnet(this, stackPrefix+"-private_subnet"+ GeneralUtil.generateRandomString(5), props,
-                CustomizedSubnet.SubnetType.PRIVATE_WITH_INGRESS_AND_EGRESS, customizedVpc.getVpcId(),"192.168.0.128/25");
-        privateSubnets.add(privateSubnet.getCfnSubnet());
+        publicSubnets.add((CfnSubnet)customizedVpc.getPublicSubnets().get(0).getNode().getDefaultChild());
+
+//        CustomizedSubnet privateSubnet = new CustomizedSubnet(this, stackPrefix+"-private_subnet"+ GeneralUtil.generateRandomString(5), props,
+//                CustomizedSubnet.SubnetType.PRIVATE_WITH_INGRESS_AND_EGRESS, customizedVpc.getVpcId(),"192.168.0.128/25");
+//
+        privateSubnets.add((CfnSubnet)customizedVpc.getPrivateSubnets().get(0).getNode().getDefaultChild());
 
         provisionNatGateway(this, stackPrefix);
 
