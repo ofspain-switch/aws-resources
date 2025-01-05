@@ -51,7 +51,7 @@ public class CustomizedSubnet extends Construct {
                 .build();
 
 
-        return new CfnSubnet(scope, id, cfnSubnetProps);
+        return new CfnSubnet(scope, id+System.currentTimeMillis(), cfnSubnetProps);
 
 
 //        SubnetProps subnetProps = SubnetProps.builder()
