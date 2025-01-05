@@ -22,10 +22,11 @@ public class CustomizedSubnet extends Construct {
     private StackProps props;
 
 
-    public CustomizedSubnet(final Construct scope, String id, final StackProps props, SubnetType subnetType){
+    public CustomizedSubnet(final Construct scope, String id, final StackProps props, SubnetType subnetType, String vpcId){
         super(scope, id);
         this.props = props;
         this.subnetType = subnetType;
+        this.vpcId = vpcId;
 
         cfnSubnet = initializeSubnet(scope, id);
         Tags.of(cfnSubnet).add("Environment", "");
