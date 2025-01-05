@@ -1,5 +1,6 @@
 package com.myorg;
 
+import com.myorg.util.GeneralUtil;
 import software.amazon.awscdk.CfnResource;
 import software.amazon.awscdk.Stack;
 import software.amazon.awscdk.StackProps;
@@ -38,9 +39,10 @@ public class CustomizedCloud extends Stack {
         publicRouteTable = createRouteTable(this,stackPrefix+"-public");
         privateRouteTable = createRouteTable(this,stackPrefix+"-private");
 
-        CustomizedSubnet publicSubnet = new CustomizedSubnet(this, stackPrefix+"-public_subnet", props, CustomizedSubnet.SubnetType.PUBLIC, customizedVpc.getVpcId());
+        CustomizedSubnet publicSubnet = new CustomizedSubnet(this, stackPrefix+"-public_subnet_"+ GeneralUtil.generateRandomString(5), props, CustomizedSubnet.SubnetType.PUBLIC, customizedVpc.getVpcId());
         publicSubnets.add(publicSubnet.getCfnSubnet());
-        CustomizedSubnet privateSubnet = new CustomizedSubnet(this, stackPrefix+"-private_subnet", props, CustomizedSubnet.SubnetType.PRIVATE_WITH_INGRESS_AND_EGRESS, customizedVpc.getVpcId());
+
+        CustomizedSubnet privateSubnet = new CustomizedSubnet(this, stackPrefix+"-private_subnet"+ GeneralUtil.generateRandomString(5), props, CustomizedSubnet.SubnetType.PRIVATE_WITH_INGRESS_AND_EGRESS, customizedVpc.getVpcId());
         privateSubnets.add(privateSubnet.getCfnSubnet());
 
         provisionNatGateway(this, stackPrefix);
